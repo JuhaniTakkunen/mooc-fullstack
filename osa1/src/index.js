@@ -2,66 +2,72 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 
-const Otsikko = (props) => {
+const TitleFeedback = () => {
     return (
-        <h1>{props.kurssi}</h1>
+        <h1>anna palautetta</h1>
     )
 };
 
-const Osa = (props) => {
-    return (
-        <p>{props.osa.nimi} {props.osa.tehtavia}</p>
-    )
-};
-
-const Sisalto = (props) => {
+const Statistics = (props) => {
+    console.log(props);
     return (
         <div>
-            <Osa osa={props.osat[0]} />
-            <Osa osa={props.osat[1]} />
-            <Osa osa={props.osat[2]} />
+            <h1>statistiikka</h1>
+            <p>Hyvä: {props.state.good}</p>
+            <p>Neutraali: {props.state.neutral}</p>
+            <p>Huono: {props.state.bad}</p>
         </div>
     )
 };
 
-const Yhteensa = (props) => {
-    return (
-        <p>yhteensä {
-            props.osat[0].tehtavia +
-            props.osat[1].tehtavia +
-            props.osat[2].tehtavia
-        } tehtävää</p>
-    )
-};
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            good: 0,
+            neutral: 0,
+            bad: 0
+        }
+    }
 
-const App = () => {
-
-    const kurssi = {
-        nimi: 'Half Stack -sovelluskehitys',
-        osat: [
-            {
-                nimi: 'Reactin perusteet',
-                tehtavia: 10
-            },
-            {
-                nimi: 'Tiedonvälitys propseilla',
-                tehtavia: 7
-            },
-            {
-                nimi: 'Komponenttien tila',
-                tehtavia: 14
-            }
-        ]
+    addGood = () => {
+        this.setState({
+            good: this.state.good + 1
+        });
+        console.log(this.state);
     };
 
-    return (
-        <div>
-            <Otsikko kurssi={kurssi.nimi} />
-            <Sisalto osat={kurssi.osat} />
-            <Yhteensa osat={kurssi.osat} />
-        </div>
-    )
-};
+    addNeutral = () => {
+        this.setState({
+            neutral: this.state.neutral + 1
+        });
+        console.log(this.state);
+
+    };
+    addBad = () => {
+        this.setState({
+            bad: this.state.bad + 1
+        });
+        console.log(this.state);
+
+    };
+
+    render() {
+
+        return (
+            <div>
+                <div>
+                    <TitleFeedback />
+                    <button onClick={this.addGood}>Hyvä</button>
+                    <button onClick={this.addNeutral}>Neutraali</button>
+                    <button onClick={this.addBad}>Huono</button>
+                    <Statistics state={this.state}/>
+
+                </div>
+            </div>
+        )
+    }
+}
 
 ReactDOM.render(
     <App />,
