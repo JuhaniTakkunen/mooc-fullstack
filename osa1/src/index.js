@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-
 const TitleFeedback = () => {
     return (
         <h1>anna palautetta</h1>
@@ -9,13 +8,25 @@ const TitleFeedback = () => {
 };
 
 const Statistics = (props) => {
-    console.log(props);
+    const state = props.state;
+    const count = state.good + state.bad + state.neutral;
+    const mean_ = state.good - state.bad;
+    let positive_percent = 0;
+
+
+    if (count>0) {
+        positive_percent = Math.round(100. * state.good / count);
+    }
+
     return (
         <div>
             <h1>statistiikka</h1>
-            <p>Hyvä: {props.state.good}</p>
-            <p>Neutraali: {props.state.neutral}</p>
-            <p>Huono: {props.state.bad}</p>
+            <p>Hyvä: {state.good}</p>
+            <p>Neutraali: {state.neutral}</p>
+            <p>Huono: {state.bad}</p>
+
+            <p>Keskiarvo: {mean_}</p>
+            <p>Positiivisia: {positive_percent}%</p>
         </div>
     )
 };
