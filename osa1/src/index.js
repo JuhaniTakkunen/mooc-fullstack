@@ -19,6 +19,17 @@ const Anecdote = (props) => {
     )
 };
 
+const Statistics = (props) => {
+    let max_votes = Math.max(...props.pisteet);
+    let index = props.pisteet.indexOf(max_votes);
+
+    return (
+        <p>Best anecdote with {max_votes} votes: <br />
+            <i>{props.anecdotes[index]}</i>
+        </p>
+    )
+};
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -52,6 +63,7 @@ class App extends React.Component {
                 <Anecdote anecdotes={this.props.anecdotes} state={this.state}/>
                 <Button event={this.changeSelected} label='next anecdote'/>
                 <Button event={this.addVote} label='vote'/>
+                <Statistics pisteet={this.state.pisteet} anecdotes={this.props.anecdotes} />
             </div>
         )
     }
