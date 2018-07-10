@@ -7,27 +7,40 @@ const TitleFeedback = () => {
     )
 };
 
+const Statistic = (props) => {
+    return (
+        <p>{props.label}: {props.status}</p>
+    )
+};
+
 const Statistics = (props) => {
     const state = props.state;
     const count = state.good + state.bad + state.neutral;
     const mean_ = state.good - state.bad;
-    let positive_percent = 0;
+    let positive_percent = "0%";
 
 
     if (count>0) {
-        positive_percent = Math.round(100. * state.good / count);
+        positive_percent = Math.round(100. * state.good / count) + "%";
     }
+
 
     return (
         <div>
             <h1>statistiikka</h1>
-            <p>Hyvä: {state.good}</p>
-            <p>Neutraali: {state.neutral}</p>
-            <p>Huono: {state.bad}</p>
+            <Statistic label={'Hyvä'} status={state.good} />
+            <Statistic label={'Neutraali'} status={state.neutral} />
+            <Statistic label={'Huono'} status={state.bad} />
 
-            <p>Keskiarvo: {mean_}</p>
-            <p>Positiivisia: {positive_percent}%</p>
+            <Statistic label={'Keskiarvo'} status={mean_} />
+            <Statistic label={'Positiivisia'} status={positive_percent} />
         </div>
+    )
+};
+
+const Button = (props) => {
+    return (
+        <button onClick={props.event}>{props.label}</button>
     )
 };
 
@@ -69,9 +82,9 @@ class App extends React.Component {
             <div>
                 <div>
                     <TitleFeedback />
-                    <button onClick={this.addGood}>Hyvä</button>
-                    <button onClick={this.addNeutral}>Neutraali</button>
-                    <button onClick={this.addBad}>Huono</button>
+                    <Button event={this.addGood} label={'Hyvä'} />
+                    <Button event={this.addNeutral} label={'Neutraali'} />
+                    <Button event={this.addBad} label={'Huono'} />
                     <Statistics state={this.state}/>
 
                 </div>
