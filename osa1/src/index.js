@@ -1,54 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const TitleFeedback = () => {
-    return (
-        <h1>anna palautetta</h1>
-    )
-};
 
-const Statistic = (props) => {
-    return (
-        <tr><td>{props.label}: </td><td>{props.status} </td></tr>
-    )
-};
-
-const Statistics = (props) => {
-    const state = props.state;
-    const count = state.good + state.bad + state.neutral;
-    const mean_ = state.good - state.bad;
-    let positive_percent = "0%";
-
-
-    if (count>0) {
-        positive_percent = Math.round(100. * state.good / count) + "%";
-        return (
-            <div>
-                <h1>statistiikka</h1>
-                <table>
-                    <tbody>
-                        <Statistic label={'Hyvä'} status={state.good} />
-                        <Statistic label={'Neutraali'} status={state.neutral} />
-                        <Statistic label={'Huono'} status={state.bad} />
-
-                        <Statistic label={'Keskiarvo'} status={mean_} />
-                        <Statistic label={'Positiivisia'} status={positive_percent} />
-                    </tbody>
-                </table>
-            </div>
-        )
-    } else {
-        return (
-            <div>
-                <h1>statistiikka</h1>
-                <p>Ei yhtään palautetta annettu</p>
-            </div>
-        )
-    }
-
-
-
-};
+function getRndInteger(min, max) {  // https://www.w3schools.com/js/js_random.asp
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
 const Button = (props) => {
     return (
@@ -56,41 +12,48 @@ const Button = (props) => {
     )
 };
 
+
+const Anecdote = (props) => {
+    return (
+        <p>{props.anecdotes[props.state.selected]}</p>
+    )
+};
+
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            good: 0,
-            neutral: 0,
-            bad: 0
+            selected: 0
         }
     }
 
-    addFeedback = (type) => {
-        return () => {
-            this.setState({
-                [type]: this.state[type] + 1
-            })
-        }
+    changeSelected = () => {
+        this.setState({
+            selected: getRndInteger(0, this.props.anecdotes.length)
+        })
     };
 
-    render() {
 
+    render() {
         return (
             <div>
-                <div>
-                    <TitleFeedback />
-                    <Button event={this.addFeedback('good')} label={'Hyvä'} />
-                    <Button event={this.addFeedback('neutral')} label={'Neutraali'} />
-                    <Button event={this.addFeedback('bad')} label={'Huono'} />
-                    <Statistics state={this.state}/>
-                </div>
+                <Anecdote anecdotes={this.props.anecdotes} state={this.state}/>
+                <Button event={this.changeSelected} label='next anecdote'/>
             </div>
         )
     }
 }
 
+const anecdotes = [
+    'If it hurts, do it more often',
+    'Adding manpower to a late software project makes it later!',
+    'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    'Premature optimization is the root of all evil.',
+    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
+];
+
 ReactDOM.render(
-    <App />,
+    <App anecdotes={anecdotes}/>,
     document.getElementById('root')
 );
