@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 
 
 const Otsikko = (props) => {
@@ -63,7 +62,4 @@ const App = () => {
     )
 };
 
-ReactDOM.render(
-    <App />,
-    document.getElementById('root')
-);
+export default App;
