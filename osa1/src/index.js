@@ -23,13 +23,25 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selected: 0
-        }
+            selected: 0,
+            pisteet: new Array(this.props.anecdotes.length).fill(0)
+
+        };
+
     }
 
     changeSelected = () => {
         this.setState({
             selected: getRndInteger(0, this.props.anecdotes.length)
+        })
+    };
+
+    addVote = () => {
+        const kopio = [...this.state.pisteet];
+        kopio[this.state.selected] += 1;
+
+        this.setState({
+            pisteet: kopio
         })
     };
 
@@ -39,6 +51,7 @@ class App extends React.Component {
             <div>
                 <Anecdote anecdotes={this.props.anecdotes} state={this.state}/>
                 <Button event={this.changeSelected} label='next anecdote'/>
+                <Button event={this.addVote} label='vote'/>
             </div>
         )
     }
