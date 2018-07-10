@@ -9,7 +9,7 @@ const TitleFeedback = () => {
 
 const Statistic = (props) => {
     return (
-        <p>{props.label}: {props.status}</p>
+        <tr><td>{props.label}: </td><td>{props.status} </td></tr>
     )
 };
 
@@ -25,12 +25,16 @@ const Statistics = (props) => {
         return (
             <div>
                 <h1>statistiikka</h1>
-                <Statistic label={'Hyvä'} status={state.good} />
-                <Statistic label={'Neutraali'} status={state.neutral} />
-                <Statistic label={'Huono'} status={state.bad} />
+                <table>
+                    <tbody>
+                        <Statistic label={'Hyvä'} status={state.good} />
+                        <Statistic label={'Neutraali'} status={state.neutral} />
+                        <Statistic label={'Huono'} status={state.bad} />
 
-                <Statistic label={'Keskiarvo'} status={mean_} />
-                <Statistic label={'Positiivisia'} status={positive_percent} />
+                        <Statistic label={'Keskiarvo'} status={mean_} />
+                        <Statistic label={'Positiivisia'} status={positive_percent} />
+                    </tbody>
+                </table>
             </div>
         )
     } else {
