@@ -62,26 +62,12 @@ class App extends React.Component {
         }
     }
 
-    addGood = () => {
-        this.setState({
-            good: this.state.good + 1
-        });
-        console.log(this.state);
-    };
-
-    addNeutral = () => {
-        this.setState({
-            neutral: this.state.neutral + 1
-        });
-        console.log(this.state);
-
-    };
-    addBad = () => {
-        this.setState({
-            bad: this.state.bad + 1
-        });
-        console.log(this.state);
-
+    addFeedback = (type) => {
+        return () => {
+            this.setState({
+                [type]: this.state[type] + 1
+            })
+        }
     };
 
     render() {
@@ -90,11 +76,10 @@ class App extends React.Component {
             <div>
                 <div>
                     <TitleFeedback />
-                    <Button event={this.addGood} label={'Hyvä'} />
-                    <Button event={this.addNeutral} label={'Neutraali'} />
-                    <Button event={this.addBad} label={'Huono'} />
+                    <Button event={this.addFeedback('good')} label={'Hyvä'} />
+                    <Button event={this.addFeedback('neutral')} label={'Neutraali'} />
+                    <Button event={this.addFeedback('bad')} label={'Huono'} />
                     <Statistics state={this.state}/>
-
                 </div>
             </div>
         )
