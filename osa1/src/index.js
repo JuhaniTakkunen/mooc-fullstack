@@ -22,20 +22,28 @@ const Statistics = (props) => {
 
     if (count>0) {
         positive_percent = Math.round(100. * state.good / count) + "%";
+        return (
+            <div>
+                <h1>statistiikka</h1>
+                <Statistic label={'Hyvä'} status={state.good} />
+                <Statistic label={'Neutraali'} status={state.neutral} />
+                <Statistic label={'Huono'} status={state.bad} />
+
+                <Statistic label={'Keskiarvo'} status={mean_} />
+                <Statistic label={'Positiivisia'} status={positive_percent} />
+            </div>
+        )
+    } else {
+        return (
+            <div>
+                <h1>statistiikka</h1>
+                <p>Ei yhtään palautetta annettu</p>
+            </div>
+        )
     }
 
 
-    return (
-        <div>
-            <h1>statistiikka</h1>
-            <Statistic label={'Hyvä'} status={state.good} />
-            <Statistic label={'Neutraali'} status={state.neutral} />
-            <Statistic label={'Huono'} status={state.bad} />
 
-            <Statistic label={'Keskiarvo'} status={mean_} />
-            <Statistic label={'Positiivisia'} status={positive_percent} />
-        </div>
-    )
 };
 
 const Button = (props) => {
