@@ -1,8 +1,9 @@
 import React from 'react';
+import numberService from './services/phoneNumbers'
 
 
-const People = ({persons, filter_text}) => {
-    function name_filter (name, filter_text='') {
+const People = ({persons, filter_text, onDelete}) => {
+    function name_filter(name, filter_text = '') {
         if (filter_text === '') {
             return true
         } else return name.toLowerCase().indexOf(filter_text.toLowerCase()) > -1;
@@ -13,7 +14,11 @@ const People = ({persons, filter_text}) => {
         <div>
             <table>
                 <tbody>
-                {filtered_persons.map(person => <tr key={person.name}><td>{person.name}: </td><td>{person.number}</td></tr>)}
+                {filtered_persons.map(person => <tr key={person.name}>
+                    <td>{person.name}:</td>
+                    <td>{person.number}</td>
+                    <td><button onClick={onDelete(person.id)}>poista</button></td>
+                </tr>)}
                 </tbody>
             </table>
         </div>
@@ -22,8 +27,8 @@ const People = ({persons, filter_text}) => {
 
 const Filter = (props) => {
 
-    return(
-         <div> Rajaa hakua:
+    return (
+        <div> Rajaa hakua:
             <input
                 value={props.value}
                 onChange={props.onChange}
@@ -59,16 +64,21 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            persons: [
-                { name: 'Arto Hellas', number: '040-123456' },
-                { name: 'Martti Tienari', number: '040-123456' },
-                { name: 'Arto Järvinen', number: '040-123456' },
-                { name: 'Lea Kutvonen', number: '040-123456' }],
+            persons: [],
             newName: '',
             newNumber: '',
             filterNames: '',
         }
     }
+
+    componentDidMount() {
+        numberService
+            .getAll()
+            .then(response => {
+                this.setState({persons: response})
+            })
+    }
+
 
     addPerson = (event) => {
         event.preventDefault();
@@ -77,14 +87,17 @@ class App extends React.Component {
             number: this.state.newNumber,
         };
         if (this.state.persons.filter(person => person.name === newPerson.name).length > 0) {  // NOTE: only compares EXACTLY same
-            alert("Person already in phonebook, name: ", newPerson.name)
+            alert("Person already in phonebook, name: " + newPerson.name)
         } else {
-            const persons = this.state.persons.concat(newPerson);
-            this.setState({
-                persons: persons,
-                newName: '',
-                newNumber: '',
-            })
+            numberService
+                .create(newPerson)
+                .then(() => {
+                    this.setState({
+                        persons: this.state.persons.concat(newPerson),
+                        newName: '',
+                        newNumber: '',
+                    })
+                });
         }
     };
 
@@ -97,20 +110,34 @@ class App extends React.Component {
     handleChangeFilter = (event) => {
         this.setState({filterNames: event.target.value})
     };
+    handleDeletePerson = (id_number) => {
+        return () => {
+            const person = this.state.persons.filter(person => person.id === id_number)[0];
+            const res = window.confirm(`Poistetaanko käyttäjä: ${person.name}`);
+            if (res) {
+                alert("do removing")
+            } else {
+                alert("do nothing")
+            }
+        }
+    };
 
 
     render() {
         return (
             <div>
                 <h2>Puhelinluettelo</h2>
-                <Filter value={this.state.filterNames} onChange={this.handleChangeFilter}/>
+                <Filter value={this.state.filterNames}
+                        onChange={this.handleChangeFilter}/>
                 <PersonForm
                     onSubmit={this.addPerson}
                     state={this.state}
                     handleChangeName={this.handleChangeName}
                     handleChangeNumber={this.handleChangeNumber}
                 />
-                <People persons={this.state.persons} filter_text={this.state.filterNames}/>
+                <People persons={this.state.persons}
+                        filter_text={this.state.filterNames}
+                        onDelete={this.handleDeletePerson}/>
             </div>
         )
     }

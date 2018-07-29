@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import CourseStatistics from './CourseStatistics';
+import Countries from './Countries';
 import PhoneBook from './PhoneBook';
 
 
@@ -21,6 +22,9 @@ class App extends React.Component {
     launchAppPhoneBook = () => {
         ReactDOM.render(<PhoneBook />, document.getElementById('root'));
     };
+    launchAppCountries = () => {
+        ReactDOM.render(<Countries />, document.getElementById('root'));
+    };
 
     render() {
         return (
@@ -28,6 +32,7 @@ class App extends React.Component {
 
                 <Button event={this.launchAppCourseStatistics} label='CourseStatistics'/>
                 <Button event={this.launchAppPhoneBook} label='PhoneBook'/>
+                <Button event={this.launchAppCountries} label='Countries'/>
             </div>
         )
     }
