@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './index.css'
+
 
 import CourseStatistics from './CourseStatistics';
 import Countries from './Countries';

@@ -60,6 +60,28 @@ const PersonForm = (props) => {
     )
 };
 
+const Notification = ({ message, isError }) => {
+    if (message === null) {
+        return (
+            <div className="notification">
+
+            </div>)
+    }
+    if (isError) {
+        return (
+            <div className="notification error">
+                {message}
+            </div>
+        )
+    } else {
+        return (
+            <div className="notification success">
+                {message}
+            </div>
+        )
+    }
+};
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -68,6 +90,8 @@ class App extends React.Component {
             newName: '',
             newNumber: '',
             filterNames: '',
+            statusMessage: null,
+            isError: false
         }
     }
 
@@ -87,7 +111,33 @@ class App extends React.Component {
             number: this.state.newNumber,
         };
         if (this.state.persons.filter(person => person.name === newPerson.name).length > 0) {  // NOTE: only compares EXACTLY same
-            alert("Person already in phonebook, name: " + newPerson.name)
+
+            const person = this.state.persons.find(p => p.name === newPerson.name);
+            const changedPerson = { ...person, number: newPerson.number };
+
+            const res = window.confirm(
+                `Käyttäjä "${person.name}" on jo luettelossa, 
+                korvataanko vanha numero uudella?`
+            );
+            if (res) {
+                console.log(person.id);
+                numberService
+                    .update(changedPerson)
+                    .then(response => {
+                        this.setState({
+                            persons: this.state.persons.map(p => p.id !== person.id ? p : response)
+                        });
+                        this.showMessage({msg: "Käyttäjää päivitetty ", iserr: false})
+
+                    })
+                    .catch(error => {
+                        this.showMessage({msg: "Käyttäjän päivitys epäonnistui. Käyttäjän tiedot on luultavasti jo poistettu. ", iserr: true})
+                })
+                ;
+            } else {
+                this.showMessage({msg: "Käyttäjää ei päivitetty ", iserr: true})
+            }
+
         } else {
             numberService
                 .create(newPerson)
@@ -96,7 +146,9 @@ class App extends React.Component {
                         persons: this.state.persons.concat(newPerson),
                         newName: '',
                         newNumber: '',
-                    })
+                    });
+                    this.showMessage({msg: "Käyttäjää lisätty ", iserr: false})
+
                 });
         }
     };
@@ -115,11 +167,29 @@ class App extends React.Component {
             const person = this.state.persons.filter(person => person.id === id_number)[0];
             const res = window.confirm(`Poistetaanko käyttäjä: ${person.name}`);
             if (res) {
-                alert("do removing")
+                numberService
+                    .remove(person.id)
+                    .then(() => {
+                        this.setState({
+                            persons: this.state.persons.filter(person => person.id !== id_number)
+                        });
+                        this.showMessage({msg:"Käyttäjä poistettu ", iserr: false})
+                    })
+
             } else {
-                alert("do nothing")
+                this.showMessage({msg: "Käyttäjää ei poistettu ", iserr: true})
             }
         }
+    };
+
+    showMessage = (props) => {
+        this.setState({
+            statusMessage: props.msg,
+            isError: props.iserr
+        });
+        setTimeout(() => {
+            this.setState({statusMessage: null})
+        }, 5000)
     };
 
 
@@ -127,6 +197,7 @@ class App extends React.Component {
         return (
             <div>
                 <h2>Puhelinluettelo</h2>
+                <Notification message={this.state.statusMessage} isError={this.state.isError}/>
                 <Filter value={this.state.filterNames}
                         onChange={this.handleChangeFilter}/>
                 <PersonForm
