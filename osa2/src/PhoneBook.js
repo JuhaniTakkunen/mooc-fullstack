@@ -17,7 +17,9 @@ const People = ({persons, filter_text, onDelete}) => {
                 {filtered_persons.map(person => <tr key={person.name}>
                     <td>{person.name}:</td>
                     <td>{person.number}</td>
-                    <td><button onClick={onDelete(person.id)}>poista</button></td>
+                    <td>
+                        <button onClick={onDelete(person.id)}>poista</button>
+                    </td>
                 </tr>)}
                 </tbody>
             </table>
@@ -60,12 +62,10 @@ const PersonForm = (props) => {
     )
 };
 
-const Notification = ({ message, isError }) => {
+const Notification = ({message, isError}) => {
     if (message === null) {
         return (
-            <div className="notification">
-
-            </div>)
+            <div className="notification"/>)
     }
     if (isError) {
         return (
@@ -113,7 +113,7 @@ class App extends React.Component {
         if (this.state.persons.filter(person => person.name === newPerson.name).length > 0) {  // NOTE: only compares EXACTLY same
 
             const person = this.state.persons.find(p => p.name === newPerson.name);
-            const changedPerson = { ...person, number: newPerson.number };
+            const changedPerson = {...person, number: newPerson.number};
 
             const res = window.confirm(
                 `Käyttäjä "${person.name}" on jo luettelossa, 
@@ -121,18 +121,35 @@ class App extends React.Component {
             );
             if (res) {
                 console.log(person.id);
+                console.log(person);
+                console.log(changedPerson);
+                console.log(changedPerson.id);
                 numberService
                     .update(changedPerson)
                     .then(response => {
+                        const _persons = this.state.persons.filter(p => p.id !== person.id);
                         this.setState({
-                            persons: this.state.persons.map(p => p.id !== person.id ? p : response)
+                            persons: _persons.concat(response)
                         });
                         this.showMessage({msg: "Käyttäjää päivitetty ", iserr: false})
 
                     })
                     .catch(error => {
-                        this.showMessage({msg: "Käyttäjän päivitys epäonnistui. Käyttäjän tiedot on luultavasti jo poistettu. ", iserr: true})
-                })
+                        console.log(error);
+                        numberService
+                            .create(newPerson)
+                            .then(response => {
+                                this.setState({
+                                    persons: this.state.persons.concat(response),
+                                    newName: '',
+                                    newNumber: '',
+                                });
+                                this.showMessage({
+                                    msg: "Käyttäjää ei löytynyt kannasta, mutta se perustettiin uudelleen ",
+                                    iserr: false
+                                })
+                            });
+                    })
                 ;
             } else {
                 this.showMessage({msg: "Käyttäjää ei päivitetty ", iserr: true})
@@ -141,9 +158,9 @@ class App extends React.Component {
         } else {
             numberService
                 .create(newPerson)
-                .then(() => {
+                .then(response => {
                     this.setState({
-                        persons: this.state.persons.concat(newPerson),
+                        persons: this.state.persons.concat(response),
                         newName: '',
                         newNumber: '',
                     });
@@ -173,7 +190,7 @@ class App extends React.Component {
                         this.setState({
                             persons: this.state.persons.filter(person => person.id !== id_number)
                         });
-                        this.showMessage({msg:"Käyttäjä poistettu ", iserr: false})
+                        this.showMessage({msg: "Käyttäjä poistettu ", iserr: false})
                     })
 
             } else {
@@ -197,7 +214,8 @@ class App extends React.Component {
         return (
             <div>
                 <h2>Puhelinluettelo</h2>
-                <Notification message={this.state.statusMessage} isError={this.state.isError}/>
+                <Notification message={this.state.statusMessage}
+                              isError={this.state.isError}/>
                 <Filter value={this.state.filterNames}
                         onChange={this.handleChangeFilter}/>
                 <PersonForm
