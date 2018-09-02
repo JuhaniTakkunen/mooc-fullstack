@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
 
+app.use(bodyParser.json())
 
 let persons = [
     {
@@ -58,6 +60,36 @@ app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   persons = persons.filter(p => p.id !== id)
   response.status(204).end()
+})
+
+const generateId = () => {
+    let max = 10000000;  // this should be enough randomness for our testing
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  if (!body.name) {  // NOTE! Allows whitespace, maybe increase restrictions?
+    return response.status(400).json({error: 'missing name'})
+  }
+  if (!body.number) {  // NOTE! Allows all characters, maybe increase restrictions?
+    return response.status(400).json({error: 'missing number'})
+  }
+  if (persons.find(p => p.name === body.name)){
+      // status code 400 chosen from SO: https://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists
+      return response.status(400).json({error: 'duplicate user name'})
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId()
+  }
+
+  persons = persons.concat(person)
+  response.json(person)
+
 })
 
 const PORT = 3001
