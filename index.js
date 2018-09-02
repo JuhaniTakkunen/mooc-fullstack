@@ -2,41 +2,59 @@ const express = require('express')
 const app = express()
 
 
-let default_persons = {
-  "persons": [
+let persons = [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
+        "name": "Arto Hellas",
+        "number": "040-123456",
+        "id": 1
     },
     {
-      "name": "Martti Tienari",
-      "number": "040-123456",
-      "id": 2
+        "name": "Martti Tienari",
+        "number": "040-123456",
+        "id": 2
     },
     {
-      "name": "Arto Järvinen",
-      "number": "040-123456",
-      "id": 3
+        "name": "Arto Järvinen",
+        "number": "040-123456",
+        "id": 3
     },
     {
-      "name": "Lea Kutvonen",
-      "number": "040-123456",
-      "id": 4
+        "name": "Lea Kutvonen",
+        "number": "040-123456",
+        "id": 4
     }
-  ]
-}
+]
 
 
 app.get('/', (req, res) => {
-  res.send('<h1>Hello World!</h1>')
+    res.send('<h1>Hello World!</h1>')
+})
+
+app.get('/info', (req, res) => {
+    let full_message = 'Puhelinluettelossa on ' + persons.length + ' henkilön tiedot';
+    full_message += '<br /> date: ' + Date();
+
+    let full_page = '<h1>Info page</h1><body>' + full_message + '</body>';
+    res.send(full_page);
+
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(default_persons)
+    res.json(persons)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const person = persons.find(p => p.id === id)
+
+    if (person) {
+        response.json(person)
+    } else {
+        response.status(404).end()
+    }
 })
 
 const PORT = 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`)
 })
