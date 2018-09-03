@@ -1,8 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const cors = require('cors')
 
 const app = express()
+app.use(cors())
+
 app.use(bodyParser.json())
 
 morgan.token('_data', function getData (req) {
@@ -11,6 +14,7 @@ morgan.token('_data', function getData (req) {
 
 
 app.use(morgan(':method :url :_data :status :res[content-length] - :response-time ms '))
+app.use(express.static('osa2/build'))
 
 let persons = [
     {
@@ -100,7 +104,7 @@ app.post('/api/persons', (request, response) => {
 
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
