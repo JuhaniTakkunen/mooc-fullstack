@@ -29,10 +29,6 @@ if (name) {
 
     console.log('lisätään henkilö', name, 'numero', phone, 'luetteloon')
 
-
-
-
-
     const person = new Person({
         name: name,
         number: phone
