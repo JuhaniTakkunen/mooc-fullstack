@@ -14,7 +14,7 @@ morgan.token('_data', function getData (req) {
 
 
 app.use(morgan(':method :url :_data :status :res[content-length] - :response-time ms '))
-app.use(express.static('osa2/build'))
+app.use(express.static('osa2/build/'))
 
 let persons = [
     {
