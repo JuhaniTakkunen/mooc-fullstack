@@ -56,7 +56,6 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    console.log("here we go")
     Person
         .find({})
         .then(persons => {
@@ -70,18 +69,16 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
     Person
-        .find({})
+        .findById(request.params.id)
         .then(result => {
             if (result) {
                 console.log("puhelinluettelo:")
-                result.forEach(persons => {
-                    console.log(persons["name"], persons["number"])
-                })
+                response.json(Person.format(result))
+
             } else {
                 response.status(404).end()
             }
 
-            mongoose.connection.close()
         })
         .catch(error => {
             console.log("unexpected error: ", error);
@@ -90,9 +87,14 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(p => p.id !== id)
-    response.status(204).end()
+    Person
+        .findByIdAndRemove(request.params.id)
+        .then(result => {
+          response.status(204).end()
+        })
+        .catch(error => {
+          response.status(400).send({ error: 'malformatted id' })
+        })
 })
 
 
@@ -125,6 +127,25 @@ app.post('/api/persons', (request, response) => {
             response.status(500).end()
         })
 
+})
+
+app.put('/api/persons/:id', (request, response) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+    console.log("Jii", person)
+  Person
+    .findByIdAndUpdate(request.params.id, person, { new: true } )
+    .then(updatedPerson => {
+      response.json(Person.format(updatedPerson))
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    })
 })
 
 const PORT = process.env.PORT || 3001
