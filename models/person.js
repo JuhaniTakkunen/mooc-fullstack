@@ -10,7 +10,7 @@ function simpleReadFileSync(filePath)
     return buffer
 }
 
-let password = simpleReadFileSync('./secret.txt')
+let password = process.env.MONGO_CREDENTIALS || simpleReadFileSync('./secret.txt')
 const url = 'mongodb://' + password + '@ds243502.mlab.com:43502/takkunen'
 mongoose.connect(url)
 console.log(url)

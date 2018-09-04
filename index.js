@@ -72,15 +72,20 @@ app.get('/api/persons/:id', (request, response) => {
     Person
         .find({})
         .then(result => {
-            console.log("puhelinluettelo:")
-            result.forEach(persons => {
-                console.log(persons["name"], persons["number"])
-            })
+            if (result) {
+                console.log("puhelinluettelo:")
+                result.forEach(persons => {
+                    console.log(persons["name"], persons["number"])
+                })
+            } else {
+                response.status(404).end()
+            }
+
             mongoose.connection.close()
         })
         .catch(error => {
             console.log("unexpected error: ", error);
-            response.status(500).end()
+            response.status(400).send({ error: 'malformatted id' })
         })
 })
 
