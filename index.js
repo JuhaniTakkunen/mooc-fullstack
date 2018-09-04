@@ -107,26 +107,34 @@ app.post('/api/persons', (request, response) => {
     if (!body.number) {  // NOTE! Allows all characters, maybe increase restrictions?
         return response.status(400).json({error: 'missing number'})
     }
-    if (persons.find(p => p.name === body.name)){
-        // status code 400 chosen from SO: https://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists
-        return response.status(400).json({error: 'duplicate user name'})
-    }
 
     const person = new Person({
         name: body.name,
         number: body.number
     })
 
-    person
-        .save()
-        .then(savedPerson => {
-            response.json(Person.format(savedPerson))
+    Person
+        .find({name: person.name})
+        .then(promise => {
+            console.log("jeah juhani")
+            console.log(promise)
+            return promise.length > 0;
         })
-        .catch(error => {
-            console.log("unexpected error: ", error);
-            response.status(500).end()
+        .then(promise => {
+            if (promise){
+                response.status(400).json({error: 'duplicate user name'})
+            } else {
+                person
+                    .save()
+                    .then(savedPerson => {
+                        response.json(Person.format(savedPerson))
+                    })
+                    .catch(error => {
+                        console.log("unexpected error: ", error);
+                        response.status(500).end()
+                    })
+            }
         })
-
 })
 
 app.put('/api/persons/:id', (request, response) => {

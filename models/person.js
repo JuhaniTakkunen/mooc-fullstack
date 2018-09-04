@@ -1,17 +1,15 @@
 const mongoose = require('mongoose')
 
+if ( process.env.NODE_ENV !== 'production' ) {
+    require('dotenv').config()
+}
+
 // korvaa url oman tietokantasi urlilla. ethän laita salasanaa Githubiin!
 const fs = require('fs');
 
-function simpleReadFileSync(filePath)
-{
-    let options = {encoding:'utf-8', flag:'r'};
-    let buffer = fs.readFileSync(filePath, options);
-    return buffer
-}
 
-let password = process.env.MONGO_CREDENTIALS || simpleReadFileSync('./secret.txt')
-const url = 'mongodb://' + password + '@ds243502.mlab.com:43502/takkunen'
+const url = process.env.MONGODB_URI
+
 mongoose.connect(url)
 console.log(url)
 
