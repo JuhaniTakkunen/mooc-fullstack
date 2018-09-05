@@ -2,55 +2,40 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
-
-const app = express()
 const Person = require('./models/person')
 
-app.use(cors())
-
-app.use(bodyParser.json())
-
+const app = express()
 morgan.token('_data', function getData(req) {
   return JSON.stringify(req.body)
 })
 
+app.use(cors())
+app.use(bodyParser.json())
 app.use(morgan(':method :url :_data :status :res[content-length] - :response-time ms '))
 app.use(express.static('build'))
 
-let persons = [
-  {
-    'name': 'Arto Hellas',
-    'number': '040-123456',
-    'id': 1
-  },
-  {
-    'name': 'Martti Tienari',
-    'number': '040-123456',
-    'id': 2
-  },
-  {
-    'name': 'Arto Järvinen',
-    'number': '040-123456',
-    'id': 3
-  },
-  {
-    'name': 'Lea Kutvonen',
-    'number': '040-123456',
-    'id': 4
-  }
-]
-
-
 app.get('/', (req, res) => {
+  // Default page if front is broken
   res.send('<h1>Frontend is probably broken</h1>')
 })
 
 app.get('/info', (req, res) => {
-  let full_message = 'Puhelinluettelossa on ' + persons.length + ' henkilön tiedot'
-  full_message += '<br /> date: ' + Date()
+  Person
+    .find({})
+    .then(result => {
+      if (result) {
+        let full_message = 'Puhelinluettelossa on ' + result.length + '. henkilön tiedot.'
+        full_message += '<br /> date: ' + Date()
 
-  let full_page = '<h1>Info page</h1><body>' + full_message + '</body>'
-  res.send(full_page)
+        let full_page = '<h1>Info page</h1><body>' + full_message + '</body>'
+        res.send(full_page)
+
+      } else {
+        console.log('Something went wrong')
+        res.status(500).end()
+      }
+
+    })
 
 })
 
@@ -117,7 +102,6 @@ app.post('/api/persons', (request, response) => {
   Person
     .find({ name: person.name })
     .then(promise => {
-      console.log('jeah juhani')
       console.log(promise)
       return promise.length > 0
     })
@@ -145,7 +129,6 @@ app.put('/api/persons/:id', (request, response) => {
     name: body.name,
     number: body.number
   }
-  console.log('Jii', person)
   Person
     .findByIdAndUpdate(request.params.id, person, { new: true })
     .then(updatedPerson => {
