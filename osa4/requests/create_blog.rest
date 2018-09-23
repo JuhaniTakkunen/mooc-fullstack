@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikp1bm51IiwiaWQiOiI1YjlkM2U4ZTJmNjA2ZTE2ZjQ5YjVkYzIiLCJpYXQiOjE1MzcwMzI2ODN9.2vLQ4zr7KW064qFCV3OQydIoKT3jG6JqyOOGDwzxTe4
+
+{
+  "title": "valmis4",
+  "author": "tekijä",
+  "url": "nettiurl",
+  "likes": 1234
+}
