@@ -1,187 +1,97 @@
 import React from 'react'
-import Notifications from './components/Notifications'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import { connect } from 'react-redux'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import UserList from './components/UserList'
+import User from './components/User'
+import Blog from './components/Blog'
+import Navbar from './components/Navbar'
+import Notifications from './components/Notifications'
+
+import { blogInitialization } from './reducers/blogReducer'
+import { userInitialization } from './reducers/userReducer'
+import { setToken } from './reducers/loginReducer'
+import { logoutUser } from './reducers/loginReducer'
+
+import { notify } from './reducers/notificationReducer'
 
 
 class App extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      blogs: [],
-      user: null,
-      username: "",
-      password: ""
-    }
   }
 
   componentDidMount() {
-    blogService.getAll().then(blogs =>
-      this.setState({ blogs })
-    )
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser') 
+    this.props.blogInitialization()
+    this.props.userInitialization()
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
 
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      this.setState({ user })
-      blogService.setToken(user.token)
+      if (user.token)
+        this.props.setToken(user)
+      console.log("-----------")
+      console.log(user)
     }
-  }
-
-  handleLoginFieldChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value })
-  }
-
-  login = async (event) => {
-    event.preventDefault()
-    try {
-      const user = await loginService.login({
-        username: this.state.username,
-        password: this.state.password
-      })
-
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      this.setState({ username: '', password: '', user })
-    } catch (exception) {
-      this.setState({
-        error: 'käyttäjätunnus tai salasana virheellinen',
-      })
-      this.showMessage({ msg: this.state.error, iserr: true })
-
-      setTimeout(() => {
-        this.setState({ error: null })
-      }, 5000)
-    }
-  }
-
-  logout = async () => {
-    await window.localStorage.clear()
-    console.log(this.state.user)
-    await this.setState({ user: null })
-    console.log(this.state.user)
-    console.log(this.state)
   }
 
   loginForm = () => (
     <Togglable buttonLabel="login">
-      <LoginForm
-        visible={this.state.visible}
-        username={this.state.username}
-        password={this.state.password}
-        handleChange={this.handleLoginFieldChange}
-        handleSubmit={this.login}
-      />
+      <LoginForm />
     </Togglable>
   )
 
-  showMessage = (props) => {
-    this.setState({
-      statusMessage: props.msg,
-      isError: props.iserr
-    });
-    setTimeout(() => {
-      this.setState({ statusMessage: null })
-    }, 5000)
-  };
-
-  addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = { ...this.state.newBlog }
-    console.log(blogObject)
-
-    blogService
-      .create(blogObject)
-      .then(newBlog => {
-        this.setState({
-          blogs: this.state.blogs.concat(newBlog),
-          newBlog: null
-        })
-        return newBlog
-      })
-      .then(newBlog => { this.showMessage({ msg: "Uusi blogikirjoitus" + newBlog.title + "luotu, tekijältä" + newBlog.author, iserr: false }) })
-  }
-
-  updateBlog = (blog) => {
-    console.log("wii")
-    console.log(blog)
-    
-
-    const blogObject = { user: blog.user, likes: blog.likes, author: blog.author, title: blog.title, url: blog.url, _id: blog._id }
-    blogObject.likes = blogObject.likes === null ? 1 : blogObject.likes + 1
-    console.log(blogObject)
-
-    blogService
-      .update(blog._id, blogObject)
-      .then(updateBlog => {
-            this.setState({blogs: this.state.blogs.filter(x => x._id !== blogObject._id)}) 
-            console.log("waa")
-            console.log(updateBlog)
-            return updateBlog
-        })
-      .then(updateBlog => {
-        this.setState({
-          blogs: this.state.blogs.concat(blogObject)
-        })
-        console.log("woo")
-        console.log(updateBlog)
-        return updateBlog
-      })
-      .then(updateBlog => { this.showMessage({ msg: "Like lisätty kohteelle" + updateBlog.title + ", yhteensä: " + updateBlog.likes, iserr: false }) })
-  }
-
-  deleteBlog = (blog) => {
-
-    if (window.confirm("Delete '" + blog.title + "' by " + blog.author + "?"))
-      {
-      blogService
-        .remove(blog._id)
-        .then(updateBlog => {
-              this.setState({blogs: this.state.blogs.filter(x => x._id !== blog._id)}) 
-              console.log("wafeafaefa")
-              console.log(updateBlog)
-              return updateBlog
-          })
-        .then(updateBlog => { this.showMessage({ msg: "Blogikirjoitus poistettu: " + updateBlog.title, iserr: false }) })
-    }
-  }
-
-  handleBlogChange = (event) => {
-    this.setState({ newBlog: { ...this.state.newBlog, [event.target.name]: event.target.value } })
-  }
-
   blogForm = () => (
     <div>
-      <p>{this.state.user.name} logged in</p>
-      <button onClick={this.logout}>logout</button>
-        <BlogForm
-          onSubmit={this.addBlog}
-          value={this.state.newNote}
-          handleChange={this.handleBlogChange}
-          blogs={this.state.blogs}
-          addLikeHandle={this.updateBlog}
-          removeHandle={this.deleteBlog}
-        />
+      <BlogForm />
     </div>
+  )
 
-
-  );
+  entityById = (entityid, entity) => {
+    if (entity) {
+      return entity.find(a => a._id === entityid)
+    }
+  }
 
   render() {
     return (
       <div>
-        <Notifications message={this.state.statusMessage} isError={this.state.isError} />
-        {
-          this.state.user === null ?
-            this.loginForm() :
-            this.blogForm()
+        <Router>
+          <div>
+            <h1>Blog applikaatio</h1>
+            <Navbar />
+            <Notifications />
 
-        }
+            <Route exact path="/" render={() =>
+              (this.props.user === null || typeof this.props.user === "undefined" || this.props.user.logged === false) ?
+                this.loginForm() :
+                this.blogForm()
+            } />
+
+            <Route exact path="/users" render={() => <UserList />} />
+            <Route exact path="/users/:id" render={({ match }) => <User user={this.entityById(match.params.id, this.props.users)} />} />
+            <Route exact path="/blogs/:id" render={({ match }) => <Blog blog={this.entityById(match.params.id, this.props.blogs)} />} />
+
+          </div>
+
+        </Router>
       </div>
     )
   }
 }
-export default App
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    user: state.user, 
+    users: state.users, 
+    blogs: state.blogs
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  { blogInitialization, userInitialization, notify, logoutUser, setToken }
+)(App)

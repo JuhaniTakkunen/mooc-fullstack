@@ -1,23 +1,24 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Table } from 'react-bootstrap'
 
-class Blog extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      visible: false
-    }
+// class Blog extends React.Component {
+
+const Blog = ({ blog }) => {
+
+  if (blog) {
+
+  const toggleVisibility = () => {
+    // this.setState({ visible: !this.state.visible })
   }
+  console.log("--------- juhani ------------")
+    console.log(blog)
 
-  toggleVisibility = () => {
-    this.setState({ visible: !this.state.visible })
-  }
-
-  render() {
-    const blogUsername = this.props.blog.user ? this.props.blog.user.name : ''
-
-    const showWhenVisible = { display: this.state.visible ? '' : 'none' }
-    const showWhenUsersBlog = {display: this.state.username === blogUsername || !blogUsername ? '': 'none' }
+    const blogUsername = blog.user ? blog.user.name : ''
+    let visibleState = true // this.state.visible
+    let usernameState = true //  === blogUsername || !blogUsername
+    const showWhenVisible = { display: visibleState ? '' : 'none' }
+    const showWhenUsersBlog = { display: usernameState ? '' : 'none' }
 
     const blogStyle = {
       paddingTop: 10,
@@ -28,28 +29,32 @@ class Blog extends React.Component {
     }
     return (
       <div style={blogStyle}>
-        <a onClick={this.toggleVisibility} className='blogTitleClickable'>{this.props.blog.title}</a>
-        <div className='author'>Tekijä: {this.props.blog.author}</div>
+        <a onClick={this.toggleVisibility} className='blogTitleClickable'>{blog.title}</a>
+        <div className='author'>Tekijä: {blog.author}</div>
 
         <div style={showWhenVisible} className='extraDetailsHidable'>
-          <div>Likes: {this.props.blog.likes}</div>
-          <div><a href={this.props.blog.url}>{this.props.blog.url}</a></div>
+          <div>Likes: {blog.likes}</div>
+          <div><a href={blog.url}>{blog.url}</a></div>
           <div>Added by: {blogUsername}</div>
-          <button onClick={() => this.props.addLikeHandle(this.props.blog)}>Like</button>
+          <button onClick={() => this.props.addLikeHandle(blog)}>Like</button>
           <div style={showWhenUsersBlog}>
-            <button onClick={() => this.props.removeHandle(this.props.blog)}>Remove</button>
+            <button onClick={() => this.props.removeHandle(blog)}>Remove</button>
           </div>
         </div>
       </div>
     )
   }
+  else {
+    return (<div>blog not found</div>)
+  }
 }
 
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired, 
-  addLikeHandle: PropTypes.func.isRequired, 
-  removeHandle: PropTypes.func.isRequired, 
-}
+  /*
+  Blog.propTypes = {
+    blog: PropTypes.object.isRequired, 
+    addLikeHandle: PropTypes.func.isRequired, 
+    removeHandle: PropTypes.func.isRequired, 
+  }
+  */
 
-
-export default Blog
+  export default Blog
