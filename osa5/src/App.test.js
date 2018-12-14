@@ -11,50 +11,50 @@ describe('<App />', () => {
   describe('when user is not logged', () => {
 
     beforeAll(() => {
-        app = mount(<App />)
+      app = mount(<App />)
     })
 
     it('blogs are not rendered', () => {
-        app.update()
-        const blogComponents = app.find(Blog)
+      app.update()
+      const blogComponents = app.find(Blog)
 
-        expect(blogComponents.length).toEqual(0)
+      expect(blogComponents.length).toEqual(0)
     })
   })
 
   describe('when user is logged in without blogs', () => {
     const user = {
-        username: 'tester',
-        token: '1231231214',
-        name: 'Teuvo Testaaja'
+      username: 'tester',
+      token: '1231231214',
+      name: 'Teuvo Testaaja'
     }
-    
+
     beforeAll(() => {
-        localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-        app = mount(<App />)
+      localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      app = mount(<App />)
     })
     it('blogs are rendered, but user has none', () => {
-        app.update()
-        const blogComponents = app.find(Blog)
-        expect(blogComponents.length).toEqual(blogService.blogs.length)
+      app.update()
+      const blogComponents = app.find(Blog)
+      expect(blogComponents.length).toEqual(blogService.blogs.length)
     })
-  }) 
+  })
 
   describe('when user is logged in with blogs', () => {
     const user = {
-        username: "mluukkai",
-        token: "1231231214",
-        name: "Matti Luukkainen"
+      username: 'mluukkai',
+      token: '1231231214',
+      name: 'Matti Luukkainen'
     }
-    
+
     beforeAll(() => {
-        localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-        app = mount(<App />)
+      localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      app = mount(<App />)
     })
     it('blogs are rendered, user has some', () => {
-        app.update()
-        const blogComponents = app.find(Blog)
-        expect(blogComponents.length).toEqual(blogService.blogs.length)
+      app.update()
+      const blogComponents = app.find(Blog)
+      expect(blogComponents.length).toEqual(blogService.blogs.length)
     })
-  }) 
-}) 
+  })
+})

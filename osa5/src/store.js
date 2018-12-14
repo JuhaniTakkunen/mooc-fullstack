@@ -7,10 +7,7 @@ import blogReducer from './reducers/blogReducer'
 import userReducer from './reducers/userReducer'
 import newBlogReducer from './reducers/newBlogReducer'
 import loginReducer from './reducers/loginReducer'
-
-
-// import filterReducer from './reducers/filterReducer'
-
+import commentReducer from './reducers/commentReducer'
 
 const reducer = combineReducers({
   notification: notificationReducer,
@@ -18,7 +15,7 @@ const reducer = combineReducers({
   users: userReducer,
   newBlog: newBlogReducer,
   user: loginReducer,
-  //filter: filterReducer
+  comment: commentReducer
 })
 
 const store = createStore(

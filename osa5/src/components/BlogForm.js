@@ -8,126 +8,101 @@ import { Table } from 'react-bootstrap'
 
 import { Link } from 'react-router-dom'
 
-import blogService from './../services/blogs'
+import { FormGroup, ControlLabel, FormControl, Button, Form, Grid, Row, Col } from 'react-bootstrap'
 
 
 class BlogList extends React.Component {
-    
-    addBlog = (event) => {
-        event.preventDefault()
-        const newBlog = {...this.props.newBlog}
-        this.props.blogCreation(newBlog)
-        this.props.notify("Uusi blogikirjoitus '" + newBlog.title + "' luotu, tekijältä: " + newBlog.author, 10)
-    }
-    handleBlogChange = (event) => {
-        this.props.setAny(event.target.name, event.target.value)
-    }
 
-    updateBlog = (blog) => {
+  addBlog = async (event) => {
+    event.preventDefault()
+    const newBlog = await this.props.blogCreation({ ...this.props.newBlog })
+    this.props.notify('Uusi blogikirjoitus \'' + newBlog.title + '\' luotu, tekijältä: ' + newBlog.author, 10)
+  }
+  handleBlogChange = (event) => {
+    this.props.setAny(event.target.name, event.target.value)
+  }
 
-        const blogObject = { user: blog.user, likes: blog.likes, author: blog.author, title: blog.title, url: blog.url, _id: blog._id }
-        blogObject.likes = blogObject.likes === null ? 1 : blogObject.likes + 1
+  render() {
+    return (
+      <div>
+        <Grid>
+          <Row className="show-grid">
+            <Col xs={4}>
 
-        blogService
-            .update(blog._id, blogObject)
-            .then(updateBlog => {
-                this.setState({ blogs: this.props.blogs.filter(x => x._id !== blogObject._id) })
-                return updateBlog
-            })
-            .then(updateBlog => {
-                this.setState({
-                    blogs: this.props.blogs.concat(blogObject)
-                })
-                return updateBlog
-            })
-            .then(updateBlog => { this.props.notify({ text: "Like lisätty kohteelle" + updateBlog.title + ", yhteensä: " + updateBlog.likes, error: false }) })
-    }
+              <div className="blogForm">
+                <h2>Create new blog</h2>
+                <Form onSubmit={this.addBlog}>
+                  <FormGroup>
+                    <ControlLabel>title</ControlLabel>{' '}
+                    <FormControl
+                      type="text"
+                      name="SET_TITLE"
+                      onChange={this.handleBlogChange}
+                    />
+                  </FormGroup>{' '}
+                  <FormGroup>
 
-    deleteBlog = (blog) => {
+                    <ControlLabel>author</ControlLabel>{' '}
+                    <FormControl
+                      type="text"
+                      name="SET_AUTHOR"
+                      onChange={this.handleBlogChange}
+                    />
+                  </FormGroup>{' '}
+                  <FormGroup>
 
-        if (window.confirm("Delete '" + blog.title + "' by " + blog.author + "?")) {
-            blogService
-                .remove(blog._id)
-                .then(updateBlog => {
-                    this.setState({ blogs: this.state.blogs.filter(x => x._id !== blog._id) })
-                    return updateBlog
-                })
-                .then(updateBlog => { this.props.notify({ text: "Blogikirjoitus poistettu: " + updateBlog.title, error: false }) })
-        }
-    }
+                    <ControlLabel>url</ControlLabel>{' '}
+                    <FormControl
+                      type="text"
+                      name="SET_URL"
+                      onChange={this.handleBlogChange}
+                    />
+                  </FormGroup>{' '}
+                  <Button type="submit">create</Button>
+                </Form>
+              </div>
+            </Col>
 
-    //                     <Blog key={blog._id} blog={blog} addLikeHandle={this.updateBlog} removeHandle={this.deleteBlog} />
+          </Row>
+          <hr />
+          <Row>
+            <Col xs={12}>
 
-    render() {
-        return (
-            <div className="blogForm">
-                <h2>blogs</h2>
-
-                <div>
-                    <h2>create new</h2>
-                    <div>
-                        <form onSubmit={this.addBlog}>
-                            <div>
-                                title
-                                <input
-                                    type="text"
-                                    name="SET_TITLE"
-                                    onChange={this.handleBlogChange}
-                                />
-                            </div>
-                            <div>
-                                author
-                                <input
-                                    type="text"
-                                    name="SET_AUTHOR"
-                                    onChange={this.handleBlogChange}
-                                />
-                            </div>
-                            <div>
-                                url
-                                <input
-                                    type="text"
-                                    name="SET_URL"
-                                    onChange={this.handleBlogChange}
-                                />
-                            </div>
-                            <button>create</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div>
-
+              <div>
                 <h2>Blogs</h2>
                 <Table striped>
-                    <tbody>
-                        {this.props.blogs.sort(function (a, b) { return b.likes - a.likes }).map(blog =>
-                            <tr key={blog._id}>
-                                <td><Link to={`/blogs/${blog._id}`}>{blog.title} by {blog.author}</Link></td>
-                            </tr>
-                        )}
-                    </tbody>
+                  <tbody>
+                    {this.props.blogs.sort(function (a, b) { return b.likes - a.likes }).map(blog =>
+                      <tr key={blog._id}>
+                        <td><Link to={`/blogs/${blog._id}`}>{blog.title} by {blog.author}. Added by: {blog.user ? blog.user.name: 'anonymous'}</Link></td>
+                      </tr>
+                    )}
+                  </tbody>
 
                 </Table>
-                </div>
+              </div>
+            </Col>
 
-            </div>
-        )
-    }
+          </Row>
+        </Grid>
+
+      </div >
+    )
+  }
 }
 
 
-const mapStateToProps = (state, ownProps) => {
-    return { 
-        blogs: state.blogs, 
-        newBlog: state.newBlog
-    }
+const mapStateToProps = (state) => {
+  return {
+    blogs: state.blogs,
+    newBlog: state.newBlog
+  }
 
 }
 
 export default connect(
-    mapStateToProps,
-    { notify, setAny, blogCreation }
+  mapStateToProps,
+  { notify, setAny, blogCreation }
 )(BlogList)
 
 

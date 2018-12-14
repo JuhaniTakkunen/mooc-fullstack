@@ -5,13 +5,13 @@ import blogService from '../services/blogs'
 const reducer = (store = { logged: false }, action) => {
   switch (action.type) {
   case 'LOGIN_USER':
-    return { ...store, ...action.user, logged: true}
+    return { ...store, ...action.user, logged: true }
   case 'SET_USERNAME':
-    return { ...store, username: action.text }
+    return { ...store, usernameInput: action.text }
   case 'SET_PASSWORD':
-    return { ...store, password: action.text }
+    return { ...store, passwordInput: action.text }
   case 'RESET_CREDENTIALS':
-    return { ...store, password: '', username: '' }
+    return { ...store, passwordInput: '', usernameInput: '' }
   case 'SET_TOKEN':
     return { ...store, token: action.token, logged: true, username: action.username, name: action.name }
   case 'LOGOUT_USER':
@@ -23,21 +23,16 @@ const reducer = (store = { logged: false }, action) => {
 export const loginUser = (credentials) => {
   return async (dispatch) => {
     const user = await loginService.login(credentials)
-    console.log(user)
-    console.log("=AAAAAAAAAAAA======")
     dispatch({
       type: 'LOGIN_USER',
       user: user
     })
-    console.log("LOGGED IN")
-    console.log(user)
     return user
   }
 }
 
 export const logoutUser = () => {
   return async (dispatch) => {
-    console.log("logout starts")
     dispatch({
       type: 'LOGOUT_USER'
     })
@@ -62,12 +57,12 @@ export const setCredential = (type, text) => {
 }
 
 export const setToken = (user) => {
-  const token = blogService.setToken(user.token)
+  blogService.setToken(user.token)
   return (dispatch) => {
     dispatch({
       type: 'SET_TOKEN',
-      token: user.token, 
-      username: user.username, 
+      token: user.token,
+      username: user.username,
       name: user.name
     })
   }

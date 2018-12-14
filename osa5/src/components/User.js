@@ -11,7 +11,7 @@ const User = ({ user }) => {
         <h2>{user.name}</h2>
         <div>has {user.blogs.length} blogs</div>
         <h2>Added blogs</h2>
-
+        {console.log(user.blogs)}
         <Table striped>
           <tbody>
             {user.blogs.map(blog =>

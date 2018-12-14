@@ -1,16 +1,11 @@
-import React from 'react';
+import React from 'react'
 import { connect } from 'react-redux'
 import { logoutUser } from './../reducers/loginReducer'
-import { Link } from 'react-router-dom'
+import { Navbar, NavItem, Nav, Button } from 'react-bootstrap'
 
+class Header extends React.Component {
 
-class Navbar extends React.Component {
-  menuStyle = {
-    background: 'grey',
-    fontSize: 15,
-  }
-
-  logout = async () => {  // move me to login form
+  logout = async () => {
     await window.localStorage.clear()
     await this.props.logoutUser()
   }
@@ -20,18 +15,21 @@ class Navbar extends React.Component {
   }
 
   render() {
-    const onlyIfLoggedOut = { display: this.isUserLogged() ? 'none' : '' }
     const onlyIfLoggedIn = { display: this.isUserLogged() ? '' : 'none' }
-    console.log(this.props.user)
-    console.log("============")
     return (
-      <div style={this.menuStyle}>
-        <Link to="/">blogs</Link>&nbsp;
-        <Link to="/users">users</Link>&nbsp;
-        <div style={onlyIfLoggedIn}><p>User: {this.props.user.name}</p></div>
-        <div style={onlyIfLoggedOut}><p>User not logged in </p></div>
+      <div>
+        <Navbar>
+          <Nav>
+            <NavItem eventKey={1} href="/">blogs</NavItem>
+            <NavItem eventKey={2} href="/users">users</NavItem>
+          </Nav>
 
-        <button onClick={this.logout} style={onlyIfLoggedIn}>logout</button>
+          <Navbar.Text pullRight>{this.isUserLogged() ? 'User: ' + this.props.user.name: 'User not logged in'}</Navbar.Text>
+          <Navbar.Form pullRight>
+            <Button type="button" onClick={this.logout} style={onlyIfLoggedIn}>logout</Button>
+          </Navbar.Form>
+        </Navbar>
+
       </div>
     )
   }
@@ -44,6 +42,6 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(
-  mapStateToProps, 
+  mapStateToProps,
   { logoutUser }
-)(Navbar)
+)(Header)

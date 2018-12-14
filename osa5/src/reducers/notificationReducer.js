@@ -1,6 +1,5 @@
 
 const reducer = (state =  null, action) => {
-  console.log('ACTION: ', action)
   switch (action.type) {
   case 'SET_NOTIFICATION':
     return [action.text, action.isError]

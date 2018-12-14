@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 
 import { notify } from './../reducers/notificationReducer'
 import { loginUser, setCredential, resetCredentials, setToken } from './../reducers/loginReducer'
+import { FormGroup, ControlLabel, FormControl, Button, Form } from 'react-bootstrap'
+
 
 class LoginForm extends React.Component {
 
@@ -15,18 +17,15 @@ class LoginForm extends React.Component {
     event.preventDefault()
     try {
       const newUser = await this.props.loginUser({
-        username: this.props.user.username,
-        password: this.props.user.password
+        username: this.props.user.usernameInput,
+        password: this.props.user.passwordInput
       })
-
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify({ ...newUser, password: '' } ))  // reset password just in case
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify({ ...newUser, passwordInput: '' }))  // reset password just in case
       await this.props.setToken(newUser)
-      console.log(newUser)
-      console.log("--------------")
       this.props.resetCredentials()
     } catch (exception) {
       console.log(exception)
-      this.props.notify( 'käyttäjätunnus tai salasana virheellinen', 5, true )
+      this.props.notify('käyttäjätunnus tai salasana virheellinen', 5, true)
 
       setTimeout(() => {
         this.setState({ error: null })
@@ -38,34 +37,36 @@ class LoginForm extends React.Component {
     return (
       <div className="loginForm">
         <h2>Kirjaudu sovellukseen</h2>
-        <form onSubmit={this.login}>
-          <div>
-            käyttäjätunnus
-            <input
+        <Form inline onSubmit={this.login}>
+          <FormGroup>
+            <ControlLabel>käyttäjätunnus</ControlLabel>{' '}
+            <FormControl
               type="text"
+              autoComplete="username"
               name="SET_USERNAME"
               onChange={this.handleLoginFieldChange}
             />
-          </div>
-          <div>
-            salasana
-            <input
+          </FormGroup>{' '}
+          <FormGroup>
+            <ControlLabel>salasana</ControlLabel>{' '}
+            <FormControl
               type="password"
               name="SET_PASSWORD"
+              autoComplete="current-password"
               onChange={this.handleLoginFieldChange}
-            />
-          </div>
-          <button type="submit">kirjaudu</button>
-        </form>
+            />{' '}
+            <Button type="submit">kirjaudu</Button>
+          </FormGroup>
+        </Form>
       </div>
     )
   }
 }
 
 
-const mapStateToProps = (state, ownProps) => {
-  return { 
-      user: state.user 
+const mapStateToProps = (state) => {
+  return {
+    user: state.user
   }
 }
 

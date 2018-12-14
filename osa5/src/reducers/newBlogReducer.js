@@ -1,6 +1,5 @@
 
 const reducer = (state = {}, action) => {
-  console.log('ACTION: wii:  ', action.text, action.type)
   switch (action.type) {
   case 'SET_TITLE':
     return { title: action.text, author: state.author, url: state.url }

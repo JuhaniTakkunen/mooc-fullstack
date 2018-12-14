@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import SimpleBlog from './SimpleBlog'
 
-/* 
+/*
     Tee testi, joka varmistaa, että komponentti renderöi blogin titlen, authorin ja likejen määrän.
     Lisää komponenttiin tarvittaessa testausta helpottavia CSS-luokkia.
 */
@@ -11,7 +11,7 @@ describe('<SimpleBlog />', () => {
   it('renders content', () => {
     const blog = {
       title: 'Foo Title',
-      author: 'Bar Author', 
+      author: 'Bar Author',
       likes: 42
     }
     const mockHandler = jest.fn()

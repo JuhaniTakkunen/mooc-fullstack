@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom'
-import { Table, Grid, Row, Col } from 'react-bootstrap'
+import { Table, Grid, Row, Col, Button, Navbar, NavItem, Nav } from 'react-bootstrap'
 
 const Notifications = ({ message }) => {
 
@@ -27,25 +27,35 @@ const Notifications = ({ message }) => {
 };
 
 const Menu = ({ notification }) => {
-  const menuStyle = {
-    background: 'grey',
-    fontSize: 15,
-  }
-  return (
-    <div style={menuStyle}>
-      <Link to="/">anecdotes</Link>&nbsp;
-      <Link to="/create">create new</Link>&nbsp;
-      <Link to="/about">about</Link>&nbsp;
-      <Notifications message={notification} />
 
+  return (
+    <div>
+      <div>
+        <Navbar>
+          <Navbar.Header>
+            <Navbar.Brand>
+              <a href="/">Mainpage</a>
+            </Navbar.Brand>
+          </Navbar.Header>
+          <Nav>
+            <NavItem eventKey={1} href="/create">create new</NavItem>
+            <NavItem eventKey={2} href="/about">about</NavItem>
+          </Nav>
+        </Navbar>
+      </div>
+
+      <div>
+        <Notifications message={notification} />
+      </div>
     </div>
+
   )
 }
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
-    <Table striped>
+    <Table striped bordered condensed hover>
       <tbody>
 
         {anecdotes.map(anecdote =>
@@ -62,23 +72,23 @@ const AnecdoteList = ({ anecdotes }) => (
 
     </Table>
   </div>
-      )
+  )
       
 
 const Anecdote = ({anecdote}) => {
   return (
-  <div>
-        <h2>{anecdote.content} by {anecdote.author}</h2>
-        <div>has {anecdote.votes} votes</div>
-        <div>for more info see <a href={anecdote.info}>{anecdote.info}</a></div>
+    <div>
+      <h2>{anecdote.content} by {anecdote.author}</h2>
+      <div>has {anecdote.votes} votes</div>
+      <div>for more info see <a href={anecdote.info}>{anecdote.info}</a></div>
 
-        <div><br /></div>
-        <div></div>
-      </div>
-      )}
+      <div><br /></div>
+      <div></div>
+    </div>
+  )}
       
-      const About = () => (
-  <div>
+  const About = () => (
+    <div>
         <h2>About anecdote app</h2>
         <Grid>
           <Row className="show-grid">
@@ -113,10 +123,10 @@ const Anecdote = ({anecdote}) => {
       )
       
 class CreateNew extends React.Component {
-        constructor() {
-      super()
+    constructor() {
+    super()
     this.state = {
-        content: '',
+      content: '',
       author: '',
       info: ''
     }
@@ -128,9 +138,9 @@ class CreateNew extends React.Component {
     }
   
   handleSubmit = (e) => {
-        e.preventDefault()
+    e.preventDefault()
     this.props.addNew({
-        content: this.state.content,
+      content: this.state.content,
       author: this.state.author,
       info: this.state.info,
       votes: 0
@@ -142,26 +152,31 @@ class CreateNew extends React.Component {
       <div>
         <h2>create a new anecdote</h2>
         <form onSubmit={this.handleSubmit}>
-          <div>
-            content
-            <input name='content' value={this.state.content} onChange={this.handleChange} />
-          </div>
-          <div>
-            author
-            <input name='author' value={this.state.author} onChange={this.handleChange} />
-          </div>
-          <div>
-            url for more info
-            <input name='info' value={this.state.info} onChange={this.handleChange} />
-          </div>
-          <button>create</button>
+          <Grid>
+            <Row className="show-grid">
+              <Col xs={2} md={2}>content</Col>
+              <Col xs={3} md={3}>
+                <input name='content' value={this.state.content} onChange={this.handleChange} />
+              </Col>
+            </Row>
+            <Row className="show-grid">
+              <Col xs={2} md={2}>author</Col>
+              <Col xs={3} md={3}><input name='author' value={this.state.author} onChange={this.handleChange} /></Col>
+            </Row>
+            <Row className="show-grid">
+              <Col xs={2} md={2}>url for more info</Col>
+              <Col xs={3} md={3}><input name='info' value={this.state.info} onChange={this.handleChange} /></Col>
+            </Row>
+          </Grid>
+          <Button bsStyle="primary">create</Button>
+
         </form>
       </div>
-      )
-  
-    }
+    )
+
   }
-  
+}
+
 class App extends React.Component {
         constructor() {
       super()

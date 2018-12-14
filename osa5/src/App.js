@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
 import UserList from './components/UserList'
 import User from './components/User'
 import Blog from './components/Blog'
@@ -20,9 +19,6 @@ import { notify } from './reducers/notificationReducer'
 
 
 class App extends React.Component {
-  constructor(props) {
-    super(props)
-  }
 
   componentDidMount() {
     this.props.blogInitialization()
@@ -33,15 +29,11 @@ class App extends React.Component {
       const user = JSON.parse(loggedUserJSON)
       if (user.token)
         this.props.setToken(user)
-      console.log("-----------")
-      console.log(user)
     }
   }
 
   loginForm = () => (
-    <Togglable buttonLabel="login">
-      <LoginForm />
-    </Togglable>
+    <LoginForm />
   )
 
   blogForm = () => (
@@ -66,7 +58,7 @@ class App extends React.Component {
             <Notifications />
 
             <Route exact path="/" render={() =>
-              (this.props.user === null || typeof this.props.user === "undefined" || this.props.user.logged === false) ?
+              (this.props.user === null || typeof this.props.user === 'undefined' || this.props.user.logged === false) ?
                 this.loginForm() :
                 this.blogForm()
             } />
@@ -83,10 +75,10 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
-    user: state.user, 
-    users: state.users, 
+    user: state.user,
+    users: state.users,
     blogs: state.blogs
   }
 }
